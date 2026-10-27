@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Habits</title>
+  <meta name="theme-color" content="#111318">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Habits">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Sign-in (cloud mode only) -->
+  <main id="login" hidden>
+    <h1>Habits</h1>
+    <form id="login-form">
+      <input name="email" type="email" placeholder="Email" autocomplete="username" required>
+      <input name="password" type="password" placeholder="Password" autocomplete="current-password" required>
+      <button class="primary" type="submit">Sign in</button>
+      <p class="error" id="login-error"></p>
+    </form>
+  </main>
+
+  <!-- Main app -->
+  <main id="app" hidden>
+    <header>
+      <div>
+        <p class="date" id="date"></p>
+        <h1>Habits</h1>
+      </div>
+      <div class="header-btns">
+        <button class="round-btn" id="menu-btn" aria-label="Settings">⋯</button>
+        <button class="round-btn" id="add-btn" aria-label="Add habit">+</button>
+      </div>
+    </header>
+    <p class="banner" id="local-banner" hidden>Local mode: data is saved on this device only. Add your Supabase keys in config.js to sync.</p>
+    <div class="progress"><div class="bar" id="progress-bar"></div></div>
+    <p class="summary" id="summary"></p>
+    <section id="list"></section>
+    <details id="archived" hidden>
+      <summary>Archived</summary>
+      <div id="archived-list"></div>
+    </details>
+  </main>
+
+  <!-- Add / edit habit -->
+  <dialog id="edit-dialog">
+    <form method="dialog" id="edit-form">
+      <h2 id="edit-title">New habit</h2>
+      <div class="row">
+        <input name="emoji" class="emoji-input" maxlength="4" placeholder="✅" aria-label="Emoji">
+        <input name="name" placeholder="e.g. Read 20 minutes" required aria-label="Name">
+      </div>
+      <div class="swatches" id="swatches" role="radiogroup" aria-label="Colour"></div>
+      <div class="actions">
+        <button type="button" id="edit-cancel">Cancel</button>
+        <button value="save" class="primary">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Habit detail -->
+  <dialog id="detail-dialog">
+    <div class="detail">
+      <div class="detail-head">
+        <span class="emoji" id="d-emoji"></span>
+        <h2 id="d-name"></h2>
+        <button class="icon-btn" id="d-close" aria-label="Close">✕</button>
+      </div>
+      <div class="stats">
+        <div><b id="d-current"></b><span>current</span></div>
+        <div><b id="d-best"></b><span>best</span></div>
+        <div><b id="d-total"></b><span>total</span></div>
+        <div><b id="d-rate"></b><span>last 30d</span></div>
+      </div>
+      <p class="hint">Tap a day to mark or unmark it.</p>
+      <div class="heatmap" id="d-heatmap"></div>
+      <div class="actions spread">
+        <button id="d-edit">Edit</button>
+        <button id="d-archive">Archive</button>
+        <button id="d-delete" class="danger">Delete</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Settings -->
+  <dialog id="menu-dialog">
+    <div class="detail">
+      <div class="detail-head">
+        <h2>Settings</h2>
+        <button class="icon-btn" id="m-close" aria-label="Close">✕</button>
+      </div>
+      <p class="hint" id="m-account"></p>
+      <div class="actions column">
+        <button id="m-export">Export data (JSON)</button>
+        <button id="m-refresh">Reload from cloud</button>
+        <button id="m-signout" class="danger">Sign out</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
