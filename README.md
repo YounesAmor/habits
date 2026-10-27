@@ -3,6 +3,9 @@
 A tiny web app you install on your phone's home screen. No build step, no framework.
 
 - HabitKit-style cards: each habit has its own colour and a 6-month contribution grid
+- Schedules: pick which weekdays a habit is due (e.g. weekdays only). Days off never break a streak
+- Streak celebrations when you check in, plus confetti on milestones and "perfect days", and a daily nudge when a streak is on the line
+- Insights (📊 button): this month vs last month, this year vs last year so far, a 12-month chart against last year, a per-habit breakdown, and your best weekdays
 - Tap ✓ to mark today done
 - Tap a habit to see its current and best streak, total, and the last 30 days, plus a 16-week grid where you can tap any day to fill in or fix the past
 - Add, edit, archive or delete habits; export everything as JSON from ⋯
@@ -49,6 +52,12 @@ Open the URL on your phone and sign in once. You stay signed in after that.
 - **Android (Chrome):** ⋮ menu → **Add to Home screen** / **Install app**.
 
 It then opens full-screen like a normal app, with its own icon.
+
+## Database migrations
+
+If you set up the database before a feature was added, run the matching file from `migrations/` once in the Supabase SQL Editor:
+
+- `002_schedule.sql`: weekday schedules (the `days` column)
 
 ## Updating the app later
 

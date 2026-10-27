@@ -6,6 +6,7 @@ create table public.habits (
   name       text not null,
   emoji      text not null default '✅',
   color      text not null default '#34c77b',
+  days       text not null default '1111111' check (days ~ '^[01]{7}$' and days <> '0000000'), -- Mon..Sun
   archived   boolean not null default false,
   created_at timestamptz not null default now()
 );

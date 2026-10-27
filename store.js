@@ -33,10 +33,10 @@ const readLocal = () => JSON.parse(localStorage.getItem(LOCAL_KEY) || '{"habits"
 const writeLocal = db => localStorage.setItem(LOCAL_KEY, JSON.stringify(db));
 
 // ---------- API ----------
-// Returns { habits: [{id, name, emoji, color, archived, created_at}], checkins: [{habit_id, day}] }
+// Returns { habits: [{id, name, emoji, color, days, archived, created_at}], checkins: [{habit_id, day}] }
 export async function loadAll() {
   if (!isCloud) return readLocal();
-  const habits = await must(sb.from('habits').select('id,name,emoji,color,archived,created_at').order('created_at'));
+  const habits = await must(sb.from('habits').select('*').order('created_at'));
   // Supabase caps responses at 1000 rows, so page through check-ins.
   const checkins = [];
   for (let from = 0; ; from += 1000) {
@@ -47,15 +47,15 @@ export async function loadAll() {
   return { habits, checkins };
 }
 
-export async function addHabit({ name, emoji, color }) {
+export async function addHabit({ name, emoji, color, days }) {
   if (!isCloud) {
     const db = readLocal();
-    const habit = { id: crypto.randomUUID(), name, emoji, color, archived: false, created_at: new Date().toISOString() };
+    const habit = { id: crypto.randomUUID(), name, emoji, color, days, archived: false, created_at: new Date().toISOString() };
     db.habits.push(habit);
     writeLocal(db);
     return habit;
   }
-  return must(sb.from('habits').insert({ name, emoji, color }).select('id,name,emoji,color,archived,created_at').single());
+  return must(sb.from('habits').insert({ name, emoji, color, days }).select('*').single());
 }
 
 export async function updateHabit(id, patch) {

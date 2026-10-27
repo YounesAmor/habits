@@ -35,6 +35,9 @@
       </div>
       <div class="header-btns">
         <button class="round-btn" id="menu-btn" aria-label="Settings">⋯</button>
+        <button class="round-btn" id="insights-btn" aria-label="Insights">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><rect x="3" y="12" width="4" height="9" rx="1.5"/><rect x="10" y="7" width="4" height="14" rx="1.5"/><rect x="17" y="3" width="4" height="18" rx="1.5"/></svg>
+        </button>
         <button class="round-btn" id="add-btn" aria-label="Add habit">+</button>
       </div>
     </header>
@@ -57,6 +60,17 @@
         <input name="name" placeholder="e.g. Read 20 minutes" required aria-label="Name">
       </div>
       <div class="swatches" id="swatches" role="radiogroup" aria-label="Colour"></div>
+      <div class="schedule">
+        <div class="schedule-head">
+          <span>Repeat on</span>
+          <span class="presets">
+            <button type="button" data-days="1111111">Every day</button>
+            <button type="button" data-days="1111100">Weekdays</button>
+          </span>
+        </div>
+        <div class="day-picker" id="day-picker"></div>
+        <p class="hint">Days you skip here never break your streak.</p>
+      </div>
       <div class="actions">
         <button type="button" id="edit-cancel">Cancel</button>
         <button value="save" class="primary">Save</button>
@@ -69,7 +83,7 @@
     <div class="detail">
       <div class="detail-head">
         <span class="emoji" id="d-emoji"></span>
-        <h2 id="d-name"></h2>
+        <div class="d-title"><h2 id="d-name"></h2><span class="hint" id="d-schedule"></span></div>
         <button class="icon-btn" id="d-close" aria-label="Close">✕</button>
       </div>
       <div class="stats">
@@ -103,6 +117,67 @@
       </div>
     </div>
   </dialog>
+
+  <!-- Insights -->
+  <dialog id="insights-dialog" class="full">
+    <div class="detail">
+      <div class="detail-head">
+        <h2>Insights</h2>
+        <button class="icon-btn" id="i-close" aria-label="Close">✕</button>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi">
+          <span class="kpi-label">This month</span>
+          <b id="i-month"></b>
+          <span class="kpi-sub" id="i-month-delta"></span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">This year</span>
+          <b id="i-year"></b>
+          <span class="kpi-sub" id="i-year-delta"></span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Check-ins in <span id="i-month-label"></span></span>
+          <b id="i-checkins"></b>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Perfect days this month</span>
+          <b id="i-perfect"></b>
+        </div>
+      </div>
+      <p class="hint">Completion = days done ÷ days scheduled. Rest days don't count against you.</p>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h3>Month by month</h3>
+          <span class="legend"><i class="sw now"></i><span id="i-legend-now"></span><i class="sw prev"></i><span id="i-legend-prev"></span></span>
+        </div>
+        <div class="chart" id="i-chart"></div>
+        <p class="readout" id="i-readout"></p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h3>By habit · this month vs last</h3></div>
+        <div id="i-habits"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h3>Best days · last 12 weeks</h3></div>
+        <div class="weekdays" id="i-weekdays"></div>
+      </section>
+    </div>
+  </dialog>
+
+  <!-- Streak celebration -->
+  <div class="celebrate" id="celebrate" hidden>
+    <span class="c-emoji" id="c-emoji">🔥</span>
+    <div>
+      <b id="c-count"></b>
+      <p id="c-msg"></p>
+    </div>
+  </div>
+  <div class="confetti" id="confetti" aria-hidden="true"></div>
 
   <div class="toast" id="toast" hidden></div>
 
