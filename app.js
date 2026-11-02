@@ -463,19 +463,30 @@ $('d-delete').onclick = async () => {
   } catch (e) { toast(`Couldn't delete: ${e.message}`); }
 };
 
+let unreachable = false; // started from saved data because the database didn't answer
+
 $('menu-btn').onclick = async () => {
+  $('m-signout').hidden = !store.isCloud || unreachable; // signing out would erase the saved copy
+  $('m-refresh').hidden = !store.isCloud;
+  $('m-account').textContent = unreachable ? "Can't reach the database. Export keeps a copy of your data." : '';
+  $('menu-dialog').showModal();
+  if (unreachable) return;
   const user = await store.getUser();
   $('m-account').textContent = store.isCloud ? `Signed in as ${user?.email}` : 'Local mode — data lives on this device only.';
-  $('m-signout').hidden = !store.isCloud;
-  $('m-refresh').hidden = !store.isCloud;
-  $('menu-dialog').showModal();
 };
 $('m-close').onclick = () => $('menu-dialog').close();
 $('m-refresh').onclick = async () => { $('menu-dialog').close(); await refresh(); toast('Reloaded'); };
-$('m-export').onclick = () => {
-  const blob = new Blob([JSON.stringify(snapshot(), null, 2)], { type: 'application/json' });
-  el('a', { href: URL.createObjectURL(blob), download: `habits-${keyOf(today())}.json` }).click();
-};
+$('m-export').onclick = () => exportJSON(JSON.stringify(snapshot(), null, 2));
+
+// Share sheet on phones (Save to Files, Mail…), plain download elsewhere.
+async function exportJSON(json) {
+  const name = `habits-${keyOf(today())}.json`;
+  const file = new File([json], name, { type: 'application/json' });
+  if (navigator.canShare?.({ files: [file] })) {
+    try { await navigator.share({ files: [file] }); return; } catch (e) { if (e.name === 'AbortError') return; }
+  }
+  el('a', { href: URL.createObjectURL(file), download: name }).click();
+}
 $('m-signout').onclick = async () => {
   await store.signOut();
   localStorage.removeItem(CACHE_KEY);
@@ -499,14 +510,7 @@ function showRescue() {
   const { habits = [], checkins = [] } = JSON.parse(cached);
   $('rescue-info').textContent = `This device has a saved copy: ${habits.length} habits, ${checkins.length} check-ins.`;
   $('rescue').hidden = false;
-  $('rescue-export').onclick = async () => {
-    const name = `habits-${keyOf(today())}.json`;
-    const file = new File([cached], name, { type: 'application/json' });
-    if (navigator.canShare?.({ files: [file] })) {
-      try { await navigator.share({ files: [file] }); return; } catch (e) { if (e.name === 'AbortError') return; }
-    }
-    el('a', { href: URL.createObjectURL(file), download: name }).click();
-  };
+  $('rescue-export').onclick = () => exportJSON(cached);
 }
 
 // Re-sync and roll over to a new day when you come back to the app.
@@ -541,7 +545,15 @@ async function start() {
     const cached = localStorage.getItem(CACHE_KEY);
     if (cached) { $('app').hidden = false; applyData(JSON.parse(cached)); render(); toast('Offline — read-only'); return; }
   }
-  if (await store.getUser()) showApp();
+  // Checking the login can hang while the database is unreachable; don't leave a blank screen.
+  const timeout = new Promise(r => setTimeout(() => r('timeout'), 4000));
+  const user = await Promise.race([store.getUser(), timeout]).catch(() => 'timeout');
+  const cached = localStorage.getItem(CACHE_KEY);
+  if (user === 'timeout' && cached) {
+    unreachable = true;
+    $('app').hidden = false; applyData(JSON.parse(cached)); render();
+    toast("Can't reach the database. Showing saved data; export it from ⋯", 8000);
+  } else if (user && user !== 'timeout') showApp();
   else { $('login').hidden = false; showRescue(); }
 }
 start();
