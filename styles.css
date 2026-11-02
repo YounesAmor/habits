@@ -132,6 +132,7 @@ dialog form, .detail { padding: 20px; display: flex; flex-direction: column; gap
 /* Login */
 #login { padding-top: 20vh; text-align: center; }
 #login form { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+.rescue { margin-top: 32px; display: flex; flex-direction: column; gap: 8px; }
 .error { color: var(--danger); font-size: 14px; min-height: 1em; margin: 0; }
 
 .toast {

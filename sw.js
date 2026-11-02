@@ -1,6 +1,6 @@
 // Makes the app installable and open offline.
 // Bump VERSION whenever you deploy changes you want picked up immediately.
-const VERSION = 'v2';
+const VERSION = 'v3';
 const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'store.js', 'config.js', 'manifest.webmanifest', 'icons/icon-192.png'];
 
 self.addEventListener('install', e => {

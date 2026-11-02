@@ -492,6 +492,23 @@ $('login-form').addEventListener('submit', async e => {
   } catch (err) { $('login-error').textContent = err.message; }
 });
 
+// Data saved on this device survives even if the cloud can't be reached; let it be exported from the sign-in screen.
+function showRescue() {
+  const cached = localStorage.getItem(CACHE_KEY);
+  if (!cached) return;
+  const { habits = [], checkins = [] } = JSON.parse(cached);
+  $('rescue-info').textContent = `This device has a saved copy: ${habits.length} habits, ${checkins.length} check-ins.`;
+  $('rescue').hidden = false;
+  $('rescue-export').onclick = async () => {
+    const name = `habits-${keyOf(today())}.json`;
+    const file = new File([cached], name, { type: 'application/json' });
+    if (navigator.canShare?.({ files: [file] })) {
+      try { await navigator.share({ files: [file] }); return; } catch (e) { if (e.name === 'AbortError') return; }
+    }
+    el('a', { href: URL.createObjectURL(file), download: name }).click();
+  };
+}
+
 // Re-sync and roll over to a new day when you come back to the app.
 document.addEventListener('visibilitychange', async () => {
   if (document.visibilityState === 'visible' && !$('app').hidden) { await refresh(); greet(); }
@@ -525,6 +542,6 @@ async function start() {
     if (cached) { $('app').hidden = false; applyData(JSON.parse(cached)); render(); toast('Offline — read-only'); return; }
   }
   if (await store.getUser()) showApp();
-  else $('login').hidden = false;
+  else { $('login').hidden = false; showRescue(); }
 }
 start();
